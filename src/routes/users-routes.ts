@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { check } from "express-validator";
 
 import {
     getAllUsers,
@@ -10,7 +11,16 @@ const router = Router();
 
 router.get("/", getAllUsers);
 
-router.post("/signup", createUserAndLogUserIn);
+router.post(
+    "/signup",
+    [
+        check("name").not().isEmpty(),
+        check("email").normalizeEmail().isEmail(),
+        // normailizeEmail: Test123@gggg.com =>test123@gggg.com
+        check("password").isLength({ min: 6 }),
+    ],
+    createUserAndLogUserIn
+);
 
 router.post("/login", userLogin);
 

@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { validationResult } from "express-validator";
 import { v4 as uuidv4 } from "uuid";
 
 import HttpError from "../models/http-error";
@@ -30,6 +31,12 @@ export const getAllUsers: RequestHandler = (req, res, next) => {
 };
 
 export const createUserAndLogUserIn: RequestHandler = (req, res, next) => {
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+        return next(
+            new HttpError("Invalid inputs passed, please enter again", 422)
+        );
+    }
     const { name, email, password } = req.body as BasicUserInfo;
     const hasUser = DUMMY_USERS.find((user) => user.email === email);
 
