@@ -10,7 +10,6 @@ const app = express();
 app.use(bodyParser.json());
 
 app.use("/api/places", placesRoutes);
-
 app.use("/api/users", usersRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
