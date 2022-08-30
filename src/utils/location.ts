@@ -3,14 +3,10 @@ dotenv.config();
 
 import axios from "axios";
 
+import { Coordinates } from "../types/places-types";
 import HttpError from "../models/http-error";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
-
-interface Coordinates {
-    lat: number;
-    lng: number;
-}
 
 type getCoordsFunction = (address: string) => Promise<Coordinates>;
 

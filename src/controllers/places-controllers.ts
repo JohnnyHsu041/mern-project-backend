@@ -1,28 +1,13 @@
 import { RequestHandler } from "express";
 import { validationResult } from "express-validator";
 import { v4 as uuidv4 } from "uuid";
+import { MongoClient } from "mongodb";
 
+import { Place, BasicPlaceInfo } from "../types/places-types";
 import HttpError from "../models/http-error";
 import { getCoordsForAddress } from "../utils/location";
-
-interface BasicPlaceInfo {
-    title: string;
-    description: string;
-    address: string;
-    creator: string;
-}
-
-interface Place extends BasicPlaceInfo {
-    id: string;
-    title: string;
-    description: string;
-    location: {
-        lat: number;
-        lng: number;
-    };
-    address: string;
-    creator: string;
-}
+import PlaceSchema from "../models/mongoose-created-place";
+import Mongoose from "mongoose";
 
 const DUMMY_PLACES: Place[] = [
     {
@@ -36,29 +21,16 @@ const DUMMY_PLACES: Place[] = [
         address: "test street test road 101",
         creator: "u1",
     },
-    {
-        id: "p2",
-        title: "Empire State Building!!!!!",
-        description: "One of the most famous sky scrappers in the world",
-        location: {
-            lat: 40.7484474,
-            lng: -73.9871516,
-        },
-        address: "test street test road 101",
-        creator: "u1",
-    },
-    {
-        id: "p3",
-        title: "Empire State Building??????",
-        description: "One of the most famous sky scrappers in the world",
-        location: {
-            lat: 40.7484474,
-            lng: -73.9871516,
-        },
-        address: "test street test road 101",
-        creator: "u2",
-    },
 ];
+
+Mongoose.connect(
+    "mongodb+srv://Johnny:As6584235079@cluster0.ezakmlr.mongodb.net/place-list?retryWrites=true&w=majority"
+)
+    .then(() => console.log("Connected to the database!"))
+    .catch(() => console.log("Connecting failed!"));
+
+const mongoDbUrl =
+    "mongodb+srv://Johnny:As65$84235079@cluster0.ezakmlr.mongodb.net/?retryWrites=true&w=majority";
 
 export const createPlace: RequestHandler = async (req, res, next) => {
     const errors = validationResult(req);
@@ -74,40 +46,83 @@ export const createPlace: RequestHandler = async (req, res, next) => {
     try {
         coordinates = await getCoordsForAddress(address);
     } catch (error) {
-        return next(error);
+        return next(
+            new HttpError(
+                "Something wrong when fetching the place coordinates",
+                404
+            )
+        );
     }
 
-    const createdPlace: Place = {
+    const createdPlace = new PlaceSchema({
         id: uuidv4(),
         title,
         description,
         location: coordinates,
         address,
         creator,
-    };
+    });
 
-    DUMMY_PLACES.push(createdPlace);
+    const result = await createdPlace.save();
 
     res.status(201).json({
         message: "Created the place",
-        allPlaces: DUMMY_PLACES,
+        place: result,
     });
 };
 
-export const getPlace: RequestHandler = (req, res, next) => {
+export const getPlace: RequestHandler = async (req, res, next) => {
     const placeId = req.params.pid;
-    const place = DUMMY_PLACES.find((place) => place.id === placeId);
+
+    let client;
+    let dataFromDb;
+    try {
+        client = await MongoClient.connect(mongoDbUrl);
+        const db = client.db("place-list");
+        const placeCollection = db.collection("places");
+        dataFromDb = await placeCollection.find().toArray();
+    } catch (error) {
+        return next(
+            new HttpError(
+                "Something wrong when fetching place data from db",
+                404
+            )
+        );
+    }
+
+    await client.close();
+
+    const place = dataFromDb.find((place) => place.id === placeId);
 
     if (!place) {
-        throw new HttpError("Could not find the place!", 404);
+        return next(new HttpError("Could not find the place!", 404));
     }
 
     res.json({ place });
 };
 
-export const getPlacesByUserId: RequestHandler = (req, res, next) => {
+export const getPlacesByUserId: RequestHandler = async (req, res, next) => {
     const userId = req.params.uid;
-    const places = DUMMY_PLACES.filter((place) => place.creator === userId);
+
+    let client;
+    let dataFromDb;
+    try {
+        client = await MongoClient.connect(mongoDbUrl);
+        const db = client.db("place-list");
+        const placeCollection = db.collection("places");
+        dataFromDb = await placeCollection.find().toArray();
+    } catch (error) {
+        return next(
+            new HttpError(
+                "Something wrong when fetching place data from db",
+                404
+            )
+        );
+    }
+
+    await client.close();
+
+    const places = dataFromDb.filter((place) => place.creator === userId);
 
     if (!places || places.length === 0) {
         return next(
@@ -139,7 +154,7 @@ export const updatePlace: RequestHandler = (req, res, next) => {
         return next(new HttpError("Could not find the place", 404));
     }
 
-    // copy the place
+    // copy the place rather than just modifying original data
     const updatedPlace = {
         ...DUMMY_PLACES[placeIndex],
     };

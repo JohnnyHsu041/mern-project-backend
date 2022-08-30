@@ -2,20 +2,8 @@ import { RequestHandler } from "express";
 import { validationResult } from "express-validator";
 import { v4 as uuidv4 } from "uuid";
 
+import { User, BasicUserInfo } from "../types/users-types";
 import HttpError from "../models/http-error";
-
-interface BasicUserInfo {
-    name: string;
-    email: string;
-    password: string;
-}
-
-interface User extends BasicUserInfo {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
-}
 
 const DUMMY_USERS: User[] = [
     {
