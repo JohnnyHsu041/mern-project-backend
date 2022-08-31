@@ -2,26 +2,25 @@ import { Router } from "express";
 import { check } from "express-validator";
 
 import {
-    getAllUsers,
-    createUserAndLogUserIn,
-    userLogin,
+    // getAllUsers,
+    signup,
+    // userLogin,
 } from "../controllers/users-controllers";
 
 const router = Router();
 
-router.get("/", getAllUsers);
+// router.get("/", getAllUsers);
 
 router.post(
     "/signup",
     [
         check("name").not().isEmpty(),
-        check("email").normalizeEmail().isEmail(),
-        // normailizeEmail: Test123@gggg.com =>test123@gggg.com
+        check("email").normalizeEmail().isEmail(), // normailizeEmail: Test123@gggg.com =>test123@gggg.com
         check("password").isLength({ min: 6 }),
     ],
-    createUserAndLogUserIn
+    signup
 );
 
-router.post("/login", userLogin);
+// router.post("/login", userLogin);
 
 export default router;

@@ -5,8 +5,9 @@ export interface BasicUserInfo {
 }
 
 export interface User extends BasicUserInfo {
-    id: string;
     name: string;
     email: string;
     password: string;
+    image: string;
+    places: string;
 }

@@ -11,8 +11,8 @@ export interface BasicPlaceInfo {
 }
 
 export interface Place extends BasicPlaceInfo {
-    id: string;
     title: string;
+    image: string;
     description: string;
     location: Coordinates;
     address: string;

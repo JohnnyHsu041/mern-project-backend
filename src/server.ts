@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import bodyParser from "body-parser";
+import Mongoose from "mongoose";
 
 import HttpError from "./models/http-error";
 import placesRoutes from "./routes/places-routes";
@@ -26,4 +27,11 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-app.listen(8080);
+Mongoose.connect(
+    "mongodb+srv://Johnny:As6584235079@cluster0.ezakmlr.mongodb.net/place-list?retryWrites=true&w=majority"
+)
+    .then(() => {
+        app.listen(8080);
+        console.log("Connected to the database!");
+    })
+    .catch((err) => console.log(err));

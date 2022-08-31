@@ -3,10 +3,13 @@ import { Place } from "../types/places-types";
 
 const placeSchema = new Schema<Place>(
     {
-        id: { type: String, required: true },
         title: { type: String, required: true },
+        image: { type: String, required: true },
         description: { type: String, required: true },
-        location: { type: Object, required: true },
+        location: {
+            lat: { type: Number, required: true },
+            lng: { type: Number, required: true },
+        },
         address: { type: String, required: true },
         creator: { type: String, required: true },
     },
@@ -15,4 +18,4 @@ const placeSchema = new Schema<Place>(
 
 // type Place = InferSchemaType<typeof placeSchema>;
 
-export default Mongoose.model("PlaceSchema", placeSchema);
+export default Mongoose.model<Place>("PlaceSchema", placeSchema);
