@@ -15,25 +15,27 @@ import UserSchema from "../models/user-schema";
 //     },
 // ];
 
-// export const getAllUsers: RequestHandler = async (req, res, next) => {
-//     let users;
-//     try {
-//         users = await UserSchema.find().exec();
-//     } catch (err) {
-//         return next(
-//             new HttpError("Fetching users failed, please try again", 500)
-//         );
-//     }
+export const getAllUsers: RequestHandler = async (req, res, next) => {
+    let users;
+    try {
+        users = await UserSchema.find({}, "email name").exec();
+    } catch (err) {
+        return next(
+            new HttpError("Fetching users failed, please try again", 500)
+        );
+    }
 
-//     if (!users || users.length === 0) {
-//         return next(new HttpError("No user info", 404));
-//     }
+    if (!users || users.length === 0) {
+        return next(new HttpError("No user info", 404));
+    }
 
-//     res.status(200).json({
-//         message: "Get user list",
-//         users: ,
-//     });
-// };
+    users = users.map((user) => user.toObject({ getters: true }));
+
+    res.status(200).json({
+        message: "Get user list",
+        users,
+    });
+};
 
 export const signup: RequestHandler = async (req, res, next) => {
     const error = validationResult(req);
@@ -43,7 +45,7 @@ export const signup: RequestHandler = async (req, res, next) => {
         );
     }
 
-    const { name, email, password } = req.body as BasicUserInfo;
+    const { name, email, password, places } = req.body as BasicUserInfo;
 
     let existingUser;
     try {
@@ -68,7 +70,7 @@ export const signup: RequestHandler = async (req, res, next) => {
         email,
         password,
         image: "https://images.unsplash.com/photo-1604170099361-14f52e9f0c11?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2787&q=80",
-        places: "test",
+        places,
     });
 
     try {
@@ -88,18 +90,24 @@ export const signup: RequestHandler = async (req, res, next) => {
     });
 };
 
-// export const userLogin: RequestHandler = (req, res, next) => {
-//     const { email, password } = req.body as { email: string; password: string };
-//     const identifiedUser = DUMMY_USERS.find((user) => user.email === email);
+export const userLogin: RequestHandler = async (req, res, next) => {
+    const { email, password } = req.body as { email: string; password: string };
 
-//     if (!identifiedUser || identifiedUser.password !== password) {
-//         return next(
-//             new HttpError(
-//                 "Could not find the user, please make sure if you registered an account",
-//                 401
-//             )
-//         );
-//     }
+    let existingUser;
+    try {
+        existingUser = await UserSchema.findOne({ email: email }).exec();
+    } catch (err) {
+        return next(new HttpError("Logging in failed, please try again", 500));
+    }
 
-//     res.status(200).json({ message: "Logged In" });
-// };
+    if (!existingUser || existingUser.password !== password) {
+        return next(
+            new HttpError(
+                "The user does not exist or the password is wrong, please try again",
+                422
+            )
+        );
+    }
+
+    res.status(200).json({ message: "Logged In" });
+};
