@@ -34,7 +34,7 @@ export const createPlace: RequestHandler = async (req, res, next) => {
         );
     }
 
-    const { title, description, address, creator } = req.body as BasicPlaceInfo;
+    const { title, description, address } = req.body as BasicPlaceInfo;
 
     let coordinates;
     try {
@@ -54,7 +54,6 @@ export const createPlace: RequestHandler = async (req, res, next) => {
         description,
         location: coordinates,
         address,
-        creator,
     });
 
     let result;

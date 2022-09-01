@@ -11,7 +11,11 @@ const placeSchema = new Schema<Place>(
             lng: { type: Number, required: true },
         },
         address: { type: String, required: true },
-        creator: { type: String, required: true },
+        creator: {
+            type: Mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: "UserSchema",
+        },
     },
     { collection: "places" }
 );

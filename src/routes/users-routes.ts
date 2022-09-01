@@ -17,7 +17,6 @@ router.post(
         check("name").not().isEmpty(),
         check("email").normalizeEmail().isEmail(), // normailizeEmail: Test123@gggg.com =>test123@gggg.com
         check("password").isLength({ min: 6 }),
-        check("places").not().isEmpty(),
     ],
     signup
 );

@@ -9,7 +9,13 @@ const userSchema = new Schema<User>(
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true, minlength: 6 },
         image: { type: String, required: true },
-        places: { type: String, required: true },
+        places: [
+            {
+                type: Mongoose.Schema.Types.ObjectId,
+                required: true,
+                ref: "PlaceSchema",
+            },
+        ],
     },
     { collection: "users" }
 );

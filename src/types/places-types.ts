@@ -1,3 +1,5 @@
+import Mongoose from "mongoose";
+
 export interface Coordinates {
     lat: number;
     lng: number;
@@ -7,7 +9,6 @@ export interface BasicPlaceInfo {
     title: string;
     description: string;
     address: string;
-    creator: string;
 }
 
 export interface Place extends BasicPlaceInfo {
@@ -16,5 +17,5 @@ export interface Place extends BasicPlaceInfo {
     description: string;
     location: Coordinates;
     address: string;
-    creator: string;
+    creator: Mongoose.ObjectId;
 }
