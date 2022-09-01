@@ -1,4 +1,5 @@
-import Mongoose from "mongoose";
+import Mongoose, { PopulatedDoc, Document } from "mongoose";
+import { User } from "./users-types";
 
 export interface Coordinates {
     lat: number;
@@ -9,6 +10,8 @@ export interface BasicPlaceInfo {
     title: string;
     description: string;
     address: string;
+    creator: PopulatedDoc<User & Document>;
+    // creator: Mongoose.Schema.Types.ObjectId;
 }
 
 export interface Place extends BasicPlaceInfo {
@@ -17,5 +20,6 @@ export interface Place extends BasicPlaceInfo {
     description: string;
     location: Coordinates;
     address: string;
-    creator: Mongoose.ObjectId;
+    creator: PopulatedDoc<User & Document>;
+    // creator: Mongoose.Schema.Types.ObjectId;
 }

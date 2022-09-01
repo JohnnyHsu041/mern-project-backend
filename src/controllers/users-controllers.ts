@@ -1,8 +1,7 @@
 import { RequestHandler } from "express";
 import { validationResult } from "express-validator";
-import { v4 as uuidv4 } from "uuid";
 
-import { User, BasicUserInfo } from "../types/users-types";
+import { BasicUserInfo } from "../types/users-types";
 import HttpError from "../models/http-error";
 import UserSchema from "../models/user-schema";
 
@@ -61,6 +60,7 @@ export const signup: RequestHandler = async (req, res, next) => {
         email,
         password,
         image: "https://images.unsplash.com/photo-1604170099361-14f52e9f0c11?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2787&q=80",
+        places: [],
     });
 
     try {

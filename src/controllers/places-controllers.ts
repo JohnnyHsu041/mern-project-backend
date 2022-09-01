@@ -1,30 +1,13 @@
 import { RequestHandler } from "express";
 import { validationResult } from "express-validator";
-import { v4 as uuidv4 } from "uuid";
-import { MongoClient } from "mongodb";
 import Mongoose from "mongoose";
 
-import { Place, BasicPlaceInfo } from "../types/places-types";
+import { User } from "../types/users-types";
+import { BasicPlaceInfo } from "../types/places-types";
 import HttpError from "../models/http-error";
 import { getCoordsForAddress } from "../utils/location";
 import PlaceSchema from "../models/place-schema";
-
-// const DUMMY_PLACES: Place[] = [
-//     {
-//         id: "p1",
-//         title: "Empire State Building",
-//         description: "One of the most famous sky scrappers in the world",
-//         location: {
-//             lat: 40.7484474,
-//             lng: -73.9871516,
-//         },
-//         address: "test street test road 101",
-//         creator: "u1",
-//     },
-// ];
-
-// const mongoDbUrl =
-//     "mongodb+srv://Johnny:As65$84235079@cluster0.ezakmlr.mongodb.net/?retryWrites=true&w=majority";
+import UserSchema from "../models/user-schema";
 
 export const createPlace: RequestHandler = async (req, res, next) => {
     const errors = validationResult(req);
@@ -34,7 +17,7 @@ export const createPlace: RequestHandler = async (req, res, next) => {
         );
     }
 
-    const { title, description, address } = req.body as BasicPlaceInfo;
+    const { title, description, address, creator } = req.body as BasicPlaceInfo;
 
     let coordinates;
     try {
@@ -54,18 +37,39 @@ export const createPlace: RequestHandler = async (req, res, next) => {
         description,
         location: coordinates,
         address,
+        creator,
     });
 
-    let result;
+    let user;
     try {
-        result = await createdPlace.save();
+        user = await UserSchema.findById(creator).exec();
     } catch (err) {
-        return next(new HttpError("Could not find update the place info", 500));
+        return next(
+            new HttpError("Fetching user data failed, please try again", 500)
+        );
+    }
+
+    if (!user) {
+        return next(new HttpError("User does not exist", 422));
+    }
+
+    try {
+        const sess = await Mongoose.startSession();
+        sess.startTransaction();
+        await createdPlace.save({ session: sess });
+        user.places.push(createdPlace._id);
+        await user.save({ session: sess });
+        await sess.commitTransaction();
+    } catch (err) {
+        console.log(err);
+        return next(
+            new HttpError("Creating Place failed, please try again", 500)
+        );
     }
 
     res.status(201).json({
         message: "Created the place",
-        place: result,
+        place: createdPlace.toObject({ getters: true }),
     });
 };
 
@@ -167,15 +171,24 @@ export const deletePlace: RequestHandler = async (req, res, next) => {
 
     let place;
     try {
-        place = await PlaceSchema.findById(placeId).exec();
+        place = await PlaceSchema.findById(placeId).populate("creator").exec();
     } catch (err) {
         return next(
             new HttpError("Fetching data failed, please try again", 500)
         );
     }
 
+    if (!place) {
+        return next(new HttpError("Could not find the place", 404));
+    }
+
     try {
-        await place!.remove();
+        const sess = await Mongoose.startSession();
+        sess.startTransaction();
+        await place.remove({ session: sess });
+        place.creator.places.pull(place);
+        await place.creator.save({ session: sess });
+        await sess.commitTransaction();
     } catch (err) {
         return next(
             new HttpError("Deleting data faied, please try again", 500)

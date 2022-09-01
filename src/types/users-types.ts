@@ -11,5 +11,5 @@ export interface User extends BasicUserInfo {
     email: string;
     password: string;
     image: string;
-    places: Mongoose.ObjectId;
+    places: Mongoose.Types.ObjectId[];
 }
