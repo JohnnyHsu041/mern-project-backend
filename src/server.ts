@@ -10,6 +10,17 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    );
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
+
+    next();
+});
+
 app.use("/api/places", placesRoutes);
 app.use("/api/users", usersRoutes);
 
@@ -28,7 +39,7 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
 });
 
 Mongoose.connect(
-    "mongodb+srv://Johnny:As6584235079@cluster0.ezakmlr.mongodb.net/place-list?retryWrites=true&w=majority"
+    "mongodb+srv://Johnny:As6584235079@cluster0.ezakmlr.mongodb.net/mern?retryWrites=true&w=majority"
 )
     .then(() => {
         app.listen(8080);
