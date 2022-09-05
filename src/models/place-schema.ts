@@ -1,4 +1,4 @@
-import Mongoose, { Schema, InferSchemaType } from "mongoose";
+import Mongoose, { Schema } from "mongoose";
 import { Place } from "../types/places-types";
 
 const placeSchema = new Schema<Place>(
@@ -19,7 +19,5 @@ const placeSchema = new Schema<Place>(
     },
     { collection: "places" }
 );
-
-// type Place = InferSchemaType<typeof placeSchema>;
 
 export default Mongoose.model<Place>("PlaceSchema", placeSchema);

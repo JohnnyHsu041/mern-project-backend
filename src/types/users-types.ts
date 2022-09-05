@@ -1,5 +1,4 @@
-import { ObjectId } from "mongodb";
-import Mongoose, { PopulatedDoc, Document } from "mongoose";
+import { PopulatedDoc, Document } from "mongoose";
 
 import { Place } from "../types/places-types";
 
@@ -15,5 +14,4 @@ export interface User extends BasicUserInfo {
     password: string;
     image: string;
     places: PopulatedDoc<Place & Document>[];
-    // places: Mongoose.Schema.Types.ObjectId[];
 }

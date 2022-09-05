@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { validationResult } from "express-validator";
-import Mongoose, { ObjectId } from "mongoose";
+import Mongoose from "mongoose";
 
 import { BasicPlaceInfo } from "../types/places-types";
 import HttpError from "../models/http-error";

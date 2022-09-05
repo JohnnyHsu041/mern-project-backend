@@ -1,4 +1,4 @@
-import Mongoose, { Schema, InferSchemaType } from "mongoose";
+import Mongoose, { Schema } from "mongoose";
 import UniqueValidator from "mongoose-unique-validator";
 
 import { User } from "../types/users-types";
@@ -21,7 +21,5 @@ const userSchema = new Schema<User>(
 );
 
 userSchema.plugin(UniqueValidator);
-
-// type User = InferSchemaType<typeof userSchema>;
 
 export default Mongoose.model<User>("UserSchema", userSchema);
