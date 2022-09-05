@@ -1,8 +1,7 @@
 import { RequestHandler } from "express";
 import { validationResult } from "express-validator";
-import Mongoose from "mongoose";
+import Mongoose, { ObjectId } from "mongoose";
 
-import { User } from "../types/users-types";
 import { BasicPlaceInfo } from "../types/places-types";
 import HttpError from "../models/http-error";
 import { getCoordsForAddress } from "../utils/location";
@@ -97,16 +96,18 @@ export const getPlace: RequestHandler = async (req, res, next) => {
 export const getPlacesByUserId: RequestHandler = async (req, res, next) => {
     const userId = req.params.uid;
 
-    let places;
+    let userWithPlaces;
     try {
-        places = await PlaceSchema.find({ creator: userId }).exec();
+        userWithPlaces = await UserSchema.findById(userId)
+            .populate("places")
+            .exec();
     } catch (err) {
         return next(
             new HttpError("Fetching data failed, please try again", 500)
         );
     }
 
-    if (!places || places.length === 0) {
+    if (!userWithPlaces || userWithPlaces.places.length === 0) {
         return next(
             new HttpError(
                 "Could not find the places info for the user ID from db",
@@ -115,9 +116,11 @@ export const getPlacesByUserId: RequestHandler = async (req, res, next) => {
         );
     }
 
-    places = places.map((place) => place.toObject({ getters: true }));
+    userWithPlaces = userWithPlaces.places.map((place) =>
+        place.toObject({ getters: true })
+    );
 
-    res.json({ places });
+    res.json({ places: userWithPlaces });
 };
 
 export const updatePlace: RequestHandler = async (req, res, next) => {

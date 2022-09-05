@@ -1,4 +1,7 @@
-import Mongoose from "mongoose";
+import { ObjectId } from "mongodb";
+import Mongoose, { PopulatedDoc, Document } from "mongoose";
+
+import { Place } from "../types/places-types";
 
 export interface BasicUserInfo {
     name: string;
@@ -11,5 +14,6 @@ export interface User extends BasicUserInfo {
     email: string;
     password: string;
     image: string;
-    places: Mongoose.Types.ObjectId[];
+    places: PopulatedDoc<Place & Document>[];
+    // places: Mongoose.Schema.Types.ObjectId[];
 }
