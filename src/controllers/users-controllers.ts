@@ -99,5 +99,7 @@ export const userLogin: RequestHandler = async (req, res, next) => {
         );
     }
 
-    res.status(200).json({ message: "Logged In" });
+    existingUser = existingUser.toObject({ getters: true });
+
+    res.status(200).json({ message: "Logged In", user: existingUser });
 };

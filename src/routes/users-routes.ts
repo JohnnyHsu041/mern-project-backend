@@ -1,5 +1,6 @@
-import { Router } from "express";
+import { RequestHandler, Router } from "express";
 import { check } from "express-validator";
+import fileUpload from "../middleware/file-upload";
 
 import {
     getAllUsers,
@@ -13,6 +14,7 @@ router.get("/", getAllUsers);
 
 router.post(
     "/signup",
+    fileUpload.single("image"),
     [
         check("name").not().isEmpty(),
         check("email").normalizeEmail().isEmail(), // normailizeEmail: Test123@gggg.com =>test123@gggg.com
