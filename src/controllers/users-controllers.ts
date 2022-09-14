@@ -143,7 +143,7 @@ export const userLogin: RequestHandler = async (req, res, next) => {
 
     let token;
     try {
-        jwt.sign(
+        token = jwt.sign(
             { userId: existingUser.id, email: existingUser.email },
             "super_secret_key",
             { expiresIn: "1h" }
@@ -154,5 +154,9 @@ export const userLogin: RequestHandler = async (req, res, next) => {
         );
     }
 
-    res.status(200).json({ message: "Logged In", token });
+    res.status(200).json({
+        message: "Logged In",
+        userId: existingUser.id,
+        token,
+    });
 };
