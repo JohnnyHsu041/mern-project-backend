@@ -8,6 +8,7 @@ import {
     updatePlace,
     deletePlace,
 } from "../controllers/places-controllers";
+import authCheck from "../middleware/auth-check";
 
 const router = Router();
 
@@ -20,10 +21,12 @@ router.post(
     ],
     createPlace
 );
-
+4;
 router.get("/:pid", getPlace);
 
 router.get("/user/:uid", getPlacesByUserId);
+
+router.use(authCheck);
 
 router.patch(
     "/:pid",
