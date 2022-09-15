@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import express, { NextFunction, Request, Response } from "express";
 import bodyParser from "body-parser";
 import Mongoose from "mongoose";
@@ -39,7 +42,7 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
 });
 
 Mongoose.connect(
-    "mongodb+srv://Johnny:As6584235079@cluster0.ezakmlr.mongodb.net/mern?retryWrites=true&w=majority"
+    `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.ezakmlr.mongodb.net/mern?retryWrites=true&w=majority`
 )
     .then(() => {
         app.listen(8080);

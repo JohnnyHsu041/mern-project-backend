@@ -16,7 +16,7 @@ export const createPlace: RequestHandler = async (req, res, next) => {
         );
     }
 
-    const { title, description, address, creator } = req.body as BasicPlaceInfo;
+    const { title, description, address } = req.body as BasicPlaceInfo;
 
     let coordinates;
     try {
@@ -36,12 +36,12 @@ export const createPlace: RequestHandler = async (req, res, next) => {
         description,
         location: coordinates,
         address,
-        creator,
+        creator: req.userData.userId,
     });
 
     let user;
     try {
-        user = await UserSchema.findById(creator).exec();
+        user = await UserSchema.findById(req.userData.userId).exec();
     } catch (err) {
         return next(
             new HttpError("Fetching user data failed, please try again", 500)
@@ -60,7 +60,6 @@ export const createPlace: RequestHandler = async (req, res, next) => {
         await user.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
-        console.log(err);
         return next(
             new HttpError("Creating Place failed, please try again", 500)
         );
