@@ -152,6 +152,12 @@ export const updatePlace: RequestHandler = async (req, res, next) => {
         return next(new HttpError("Could not find the place", 404));
     }
 
+    if (place.creator.toString() !== req.userData.userId) {
+        return next(
+            new HttpError("You are not allowed to edit this place", 401)
+        );
+    }
+
     place.title = updatedTitle;
     place.description = updatedDescription;
 
@@ -183,6 +189,12 @@ export const deletePlace: RequestHandler = async (req, res, next) => {
 
     if (!place) {
         return next(new HttpError("Could not find the place", 404));
+    }
+
+    if (place.creator.id !== req.userData.userId) {
+        return next(
+            new HttpError("You are not allowed to delete this place", 401)
+        );
     }
 
     try {

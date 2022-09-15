@@ -24,12 +24,7 @@ const authCheck: RequestHandler = (req, res, next) => {
 
         next();
     } catch (err: any) {
-        return next(
-            new HttpError(
-                "Authentication failed, please log in your account first",
-                401
-            )
-        );
+        return next(new HttpError("Authentication failed", 401));
     }
 };
 
