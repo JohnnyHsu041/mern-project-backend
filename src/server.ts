@@ -45,7 +45,7 @@ Mongoose.connect(
     `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.ezakmlr.mongodb.net/mern?retryWrites=true&w=majority`
 )
     .then(() => {
-        app.listen(8080);
+        app.listen(process.env.PORT || 8080);
         console.log("Connected to the database!");
     })
     .catch((err) => console.log(err));
