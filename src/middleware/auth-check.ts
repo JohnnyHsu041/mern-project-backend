@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import { RequestHandler } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { stringify } from "querystring";
@@ -17,7 +20,7 @@ const authCheck: RequestHandler = (req, res, next) => {
 
         const decodedToken = jwt.verify(
             token,
-            "super_secret_key"
+            process.env.TOKEN_PRIVATE_KEY!
         ) as JwtPayload;
 
         req.userData = { userId: decodedToken.userId };

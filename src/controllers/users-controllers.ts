@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import { RequestHandler } from "express";
 import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
@@ -89,7 +92,7 @@ export const signup: RequestHandler = async (req, res, next) => {
     try {
         token = jwt.sign(
             { userId: newUser.id, email: newUser.email },
-            "super_secret_key",
+            process.env.TOKEN_PRIVATE_KEY!,
             { expiresIn: "1h" }
         );
     } catch (err) {
@@ -145,7 +148,7 @@ export const userLogin: RequestHandler = async (req, res, next) => {
     try {
         token = jwt.sign(
             { userId: existingUser.id, email: existingUser.email },
-            "super_secret_key",
+            process.env.TOKEN_PRIVATE_KEY!,
             { expiresIn: "1h" }
         );
     } catch (err) {
