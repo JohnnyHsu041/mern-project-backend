@@ -13,7 +13,7 @@ import UserSchema from "../models/user-schema";
 export const getAllUsers: RequestHandler = async (req, res, next) => {
     let users;
     try {
-        users = await UserSchema.find({}, "name email").exec();
+        users = await UserSchema.find({}, "-password").exec();
     } catch (err) {
         return next(
             new HttpError("Fetching users failed, please try again", 500)

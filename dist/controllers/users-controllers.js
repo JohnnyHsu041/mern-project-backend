@@ -46,7 +46,7 @@ const user_schema_1 = __importDefault(require("../models/user-schema"));
 const getAllUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let users;
     try {
-        users = yield user_schema_1.default.find({}, "name email").exec();
+        users = yield user_schema_1.default.find({}, "-password").exec();
     }
     catch (err) {
         return next(new http_error_1.default("Fetching users failed, please try again", 500));
