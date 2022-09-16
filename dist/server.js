@@ -55,7 +55,7 @@ app.use((err, req, res, next) => {
         message: err.message || "An unknown error occurred!",
     });
 });
-mongoose_1.default.connect(`mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.ezakmlr.mongodb.net/mern?retryWrites=true&w=majority`)
+mongoose_1.default.connect(`mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.ezakmlr.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`)
     .then(() => {
     app.listen(process.env.PORT || 8080);
     console.log("Connected to the database!");

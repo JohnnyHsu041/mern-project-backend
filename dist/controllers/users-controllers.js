@@ -135,6 +135,7 @@ const userLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         return next(new http_error_1.default("Invalid credential", 401));
     }
     existingUser = existingUser.toObject({ getters: true });
+    console.log(existingUser);
     let token;
     try {
         token = jsonwebtoken_1.default.sign({ userId: existingUser.id, email: existingUser.email }, process.env.TOKEN_PRIVATE_KEY, { expiresIn: "1h" });

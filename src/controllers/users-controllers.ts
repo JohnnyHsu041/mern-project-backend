@@ -144,6 +144,8 @@ export const userLogin: RequestHandler = async (req, res, next) => {
 
     existingUser = existingUser.toObject({ getters: true });
 
+    console.log(existingUser);
+
     let token;
     try {
         token = jwt.sign(
