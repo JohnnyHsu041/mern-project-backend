@@ -3,14 +3,11 @@ import { validationResult } from "express-validator";
 import { v4 as uuidv4 } from "uuid";
 
 import HttpError from "../models/http-error";
+import { getCoordsForAddress } from "../utils/location";
 
 interface BasicPlaceInfo {
     title: string;
     description: string;
-    location: {
-        lat: number;
-        lng: number;
-    };
     address: string;
     creator: string;
 }
@@ -63,7 +60,7 @@ const DUMMY_PLACES: Place[] = [
     },
 ];
 
-export const createPlace: RequestHandler = (req, res, next) => {
+export const createPlace: RequestHandler = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return next(
@@ -71,13 +68,20 @@ export const createPlace: RequestHandler = (req, res, next) => {
         );
     }
 
-    const { title, description, location, address, creator } =
-        req.body as BasicPlaceInfo;
-    const createdPlace = {
+    const { title, description, address, creator } = req.body as BasicPlaceInfo;
+
+    let coordinates;
+    try {
+        coordinates = await getCoordsForAddress(address);
+    } catch (error) {
+        return next(error);
+    }
+
+    const createdPlace: Place = {
         id: uuidv4(),
         title,
         description,
-        location,
+        location: coordinates,
         address,
         creator,
     };
