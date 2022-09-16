@@ -102,7 +102,8 @@ const signup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         token = jsonwebtoken_1.default.sign({ userId: newUser.id, email: newUser.email }, process.env.TOKEN_PRIVATE_KEY, { expiresIn: "1h" });
     }
     catch (err) {
-        return next(new http_error_1.default("Could not sign up, please try again", 500));
+        console.log(err.message);
+        return next(new http_error_1.default(err.message, 500));
     }
     res.status(201).json({
         message: "Registered the account!",
@@ -141,7 +142,8 @@ const userLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         token = jsonwebtoken_1.default.sign({ userId: existingUser.id, email: existingUser.email }, process.env.TOKEN_PRIVATE_KEY, { expiresIn: "1h" });
     }
     catch (err) {
-        return next(new http_error_1.default("Could not log you in, please try again", 500));
+        console.log(err.message);
+        return next(new http_error_1.default(err.message, 500));
     }
     res.status(200).json({
         message: "Logged In",

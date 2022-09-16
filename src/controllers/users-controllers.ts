@@ -92,11 +92,12 @@ export const signup: RequestHandler = async (req, res, next) => {
     try {
         token = jwt.sign(
             { userId: newUser.id, email: newUser.email },
-            process.env.TOKEN_PRIVATE_KEY!,
+            process.env.TOKEN_PRIVATE_KEY as string,
             { expiresIn: "1h" }
         );
-    } catch (err) {
-        return next(new HttpError("Could not sign up, please try again", 500));
+    } catch (err: any) {
+        console.log(err.message);
+        return next(new HttpError(err.message, 500));
     }
 
     res.status(201).json({
@@ -150,13 +151,12 @@ export const userLogin: RequestHandler = async (req, res, next) => {
     try {
         token = jwt.sign(
             { userId: existingUser.id, email: existingUser.email },
-            process.env.TOKEN_PRIVATE_KEY!,
+            process.env.TOKEN_PRIVATE_KEY as string,
             { expiresIn: "1h" }
         );
-    } catch (err) {
-        return next(
-            new HttpError("Could not log you in, please try again", 500)
-        );
+    } catch (err: any) {
+        console.log(err.message);
+        return next(new HttpError(err.message, 500));
     }
 
     res.status(200).json({
